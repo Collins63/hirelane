@@ -71,6 +71,91 @@ class _RegistrationPageState extends State<RegistrationPage>{
                           style: appStyle(20, Color(kDark.value),FontWeight.bold),
                         ),
                     const HeightSpacer(size: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: Divider(
+                            color: Colors.grey,
+                            thickness: 0.5,
+                            indent: 60,
+                            endIndent: 5,
+                          )
+                        ),
+                        Text("Sign Up With", style: appStyle(12, Colors.grey, FontWeight.normal),),
+                        Flexible(
+                          child: Divider(
+                            color: Colors.grey,
+                            thickness: 0.5,
+                            indent: 5,
+                            endIndent: 60,
+                          )
+                        ),
+                      ],
+                    ),
+                    const HeightSpacer(size: 10),
+                    Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color:Colors.grey
+                                    ),
+                                    borderRadius: BorderRadius.circular(50)
+                                  ),
+                                  child: IconButton(
+                                      onPressed: (){},
+                                      icon: Image(
+                                        width: 20,
+                                        height: 20,
+                                        image: AssetImage('assets/googleLogo.png'),
+                                      )
+                                    ),
+                                ),
+                                const SizedBox(width: 15,),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color:Colors.grey
+                                    ),
+                                    borderRadius: BorderRadius.circular(50)
+                                  ),
+                                  child: IconButton(
+                                      onPressed: (){},
+                                      icon: Image(
+                                        width: 20,
+                                        height: 20,
+                                        image: AssetImage('assets/googleLogo.png'),
+                                      )
+                                    ),
+                                )
+                              ],
+                            ),
+                    const HeightSpacer(size: 40),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: Divider(
+                            color: Colors.grey,
+                            thickness: 0.5,
+                            indent: 60,
+                            endIndent: 5,
+                          )
+                        ),
+                        Text("Or Enter details here", style: appStyle(12, Colors.grey, FontWeight.normal),),
+                        Flexible(
+                          child: Divider(
+                            color: Colors.grey,
+                            thickness: 0.5,
+                            indent: 5,
+                            endIndent: 60,
+                          )
+                        ),
+                      ],
+                    ),
+                    const HeightSpacer(size: 30),
                     Form(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 0.0),
@@ -127,11 +212,26 @@ class _RegistrationPageState extends State<RegistrationPage>{
                                 ),
                               ),
                             ),
+                            
                             const HeightSpacer(size: 20),
                             TextFormField(
                               decoration: InputDecoration(
                                 prefixIcon: Icon(Iconsax.message),
                                 labelText: "Email",
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    width: 1,
+                                    color: Colors.grey,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10.0)
+                                ),
+                              ),
+                            ),
+                            const HeightSpacer(size: 20),
+                            TextFormField(
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(Iconsax.user_edit),
+                                labelText: "City",
                                 border: OutlineInputBorder(
                                   borderSide: BorderSide(
                                     width: 1,
@@ -206,68 +306,10 @@ class _RegistrationPageState extends State<RegistrationPage>{
                               },
                             ),
                             const HeightSpacer(size: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Flexible(
-                                  child: Divider(
-                                    color: Colors.grey,
-                                    thickness: 0.5,
-                                    indent: 60,
-                                    endIndent: 5,
-                                  )
-                                ),
-                                Text("Or Sign Up With", style: appStyle(12, Colors.grey, FontWeight.normal),),
-                                Flexible(
-                                  child: Divider(
-                                    color: Colors.grey,
-                                    thickness: 0.5,
-                                    indent: 5,
-                                    endIndent: 60,
-                                  )
-                                ),
-                              ],
-                            ),
+                            
                             //Image(image: AssetImage('assets/googleLogo.png'),height: 100,),
                             const HeightSpacer(size: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color:Colors.grey
-                                    ),
-                                    borderRadius: BorderRadius.circular(50)
-                                  ),
-                                  child: IconButton(
-                                      onPressed: (){},
-                                      icon: Image(
-                                        width: 20,
-                                        height: 20,
-                                        image: AssetImage('assets/googleLogo.png'),
-                                      )
-                                    ),
-                                ),
-                                const SizedBox(width: 15,),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color:Colors.grey
-                                    ),
-                                    borderRadius: BorderRadius.circular(50)
-                                  ),
-                                  child: IconButton(
-                                      onPressed: (){},
-                                      icon: Image(
-                                        width: 20,
-                                        height: 20,
-                                        image: AssetImage('assets/googleLogo.png'),
-                                      )
-                                    ),
-                                )
-                              ],
-                            )
+                            
                           ],
                         ),
                       )

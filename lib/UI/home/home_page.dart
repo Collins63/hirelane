@@ -13,6 +13,7 @@ import 'package:hirelane/CONSTANTS/app_style.dart';
 import 'package:hirelane/CONSTANTS/height_spacer.dart';
 import 'package:hirelane/CONSTANTS/reusable_text.dart';
 import 'package:hirelane/UI/forms/job.dart';
+import 'package:hirelane/UI/profile/profile.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,7 +46,7 @@ Future<void> getJobs() async {
     //final token = prefs.getString('auth_token');
 
     final response = await http.get(
-      Uri.parse("http://10.0.2.2:5002/api/jobs/"),
+      Uri.parse("http://192.168.110.231:5002/api/jobs/"),
       headers: {
         "Content-Type": "application/json",
       },
@@ -515,108 +516,34 @@ Future<void> getJobs() async {
 
         ]
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blueAccent,
+        shape: CircleBorder(),
+        onPressed: (){
+
+        },
+        child: Icon(Icons.work, color: Colors.white,),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar:BottomAppBar(
-        color: Colors.transparent,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        height: 81,
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20), // Optional rounded corners
-            topRight: Radius.circular(20),
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20)
-          ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), 
-            child: BottomAppBar(
-                color: Colors.blueAccent,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(50)
-                      ),
-                      child: IconButton(
-                        onPressed: (){
-                          //Get.to(()=> const HomePage());
-                        },
-                        icon: 
-                            FaIcon(FontAwesomeIcons.home, color: Colors.white,),
-
-                    ),
-                    ),
-                    IconButton(
-                      onPressed: (){
-                        //Navigator.pushReplacement(
-                          //context,
-                          //MaterialPageRoute(builder: (context) => MyAccount()),
-                        //);
-                      },
-                      icon: 
-                          FaIcon(FontAwesomeIcons.locationArrow, color: Colors.white),
-                    ),
-                    FloatingActionButton(
-                        onPressed: (){
-
-                        },
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                        child: const FaIcon(
-                          FontAwesomeIcons.search,
-                          color: Colors.black,
-                        ),
-                    ),
-                    IconButton(
-                      onPressed: (){
-                        // Navigator.pushReplacement(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) =>const Arpage1()),
-                        // );
-                      },
-                      icon: 
-                          FaIcon(FontAwesomeIcons.solidMessage, color: Colors.white),
-   
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        
-                      },
-                      icon: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(width: 1 , color: Colors.white),
-                          image:const DecorationImage(image: AssetImage('assets/lightLogo.png') , fit: BoxFit.cover)
-                              
-                        ),
-                      ),
-                    )
-                    //IconButton(
-                      //onPressed: (){
-                       // Navigator.pushReplacement(
-                         // context,
-                         // MaterialPageRoute(builder: (context) => Profile()),
-                       // );
-                       //Get.to(()=> const Settings());
-                      //},
-                      //icon: const Column(
-                        //children: [
-                          //FaIcon(FontAwesomeIcons.calendar, color: Colors.white),
-                          //Text(
-                            //"Calender",
-                            //style: TextStyle(fontSize: 10, color: Colors.white),
-                          //)
-                        //],
-                      //),
-                   // ),
-                  ],
-                ),
-              ),
-          ),
-        ),
+        shape: CircularNotchedRectangle(),
+        notchMargin: 6.0,
+        color: Colors.white,
+        height: 50,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            IconButton(onPressed: (){
+              Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => HomePage()));
+            }, icon: Icon(CupertinoIcons.home)),
+            IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.doc_plaintext)),
+            SizedBox(width: 40,),
+            IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.captions_bubble)),
+            IconButton(onPressed: (){
+              Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => MyProfile()));
+            }, icon: Icon(CupertinoIcons.person))
+          ],
+        )
       ),
       
     );

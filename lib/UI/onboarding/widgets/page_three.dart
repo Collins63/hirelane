@@ -12,6 +12,7 @@ import 'package:hirelane/CONSTANTS/height_spacer.dart';
 import 'package:hirelane/CONSTANTS/reusable_text.dart';
 import 'package:hirelane/UI/auth/login_page.dart';
 import 'package:hirelane/UI/auth/registration_page.dart';
+import 'package:hirelane/UI/recruiterPages/recruiterHome.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -59,6 +60,9 @@ class PageThree extends StatelessWidget {
               color2: Colors.white,
               height: 50,
               width: 300,
+              onTap: (){
+                Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=> RecruiterHome()));
+              },
             ),
           ],
         ),

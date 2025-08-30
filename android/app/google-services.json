@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "141566722277",
+    "project_id": "hirlane-996c4",
+    "storage_bucket": "hirlane-996c4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:141566722277:android:b485754e946d65f5b1140c",
+        "android_client_info": {
+          "package_name": "com.example.hirelane"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-VeO1ipBtFN_q2tCj1rU917STH_7JXVQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

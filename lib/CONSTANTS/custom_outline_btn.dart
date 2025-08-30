@@ -21,7 +21,7 @@ class CustomOutlineBtn extends StatelessWidget {
         width: width,
         height: height,
         decoration:  BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(30.0),
           //boxShadow: BoxShadow(color: Color(kLightGrey.value) , blurRadius: 0.1 , offset: Offset.zero , spreadRadius: 0.3),
           color: color2,
           border: Border.all(
@@ -31,7 +31,7 @@ class CustomOutlineBtn extends StatelessWidget {
         ),
         child: Center(
           child: ReusableText(text: text,
-           style: appStyle(16, color, FontWeight.w600)),
+           style: appStyle(14, color, FontWeight.w500)),
         ),
       ),
     );

@@ -9,6 +9,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hirelane/CONSTANTS/custom_outline_btn.dart';
+import 'package:hirelane/UI/profile/profile.dart';
+import 'package:hirelane/UI/recruiterPages/recruiterHome.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
@@ -47,7 +49,8 @@ class _LoginPageState extends State<LoginPage>{
 
   Future<bool> loginUser(String email, String password) async {
     final response = await http.post(
-      Uri.parse("http://10.0.2.2:5002/api/login"), // replace with your IP or domain
+      //Uri.parse("http://10.0.2.2:5002/api/login"), // replace with your IP or domain
+      Uri.parse("http://192.168.110.231:5002/api/login"), // replace with your IP or domain
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
         "email": email,
@@ -83,7 +86,7 @@ class _LoginPageState extends State<LoginPage>{
     //final token = prefs.getString('auth_token');
 
     final response = await http.get(
-      Uri.parse("http://10.0.2.2:5002/api/users/$userId"),
+      Uri.parse("http://192.168.110.231:5002/api/users/$userId"),
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer $token" // or "Authorization" depending on your backend
@@ -96,11 +99,19 @@ class _LoginPageState extends State<LoginPage>{
       await prefs.setString('firebase_id', userData['uid'] );
       await prefs.setString('username', userData['username'] );
       await prefs.setString('user_email', userData['email'] );
+      String isAgent = userData['isAgent'].toString();
       print("User Data: $userData");
-      Navigator.pushReplacement(
+      if(isAgent == "true"){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const RecruiterHome())
+        );
+      }else{
+        Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePage())
       );
+      }
       
     } else {
       print("Unauthorized or failed: ${response.body}");
@@ -216,6 +227,8 @@ class _LoginPageState extends State<LoginPage>{
                               onTap: (){
                                 //Navigator.pushReplacement(context, MaterialPageRoute(builder:(context)=> HomePage()));
                                 loginUser(email.text, password.text);
+                                //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> MyProfile()));
+                                //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RecruiterHome()));
                               },
                             ),
                             const SizedBox(height: 10,),
