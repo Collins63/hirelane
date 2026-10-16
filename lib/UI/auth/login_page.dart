@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:hirelane/CONSTANTS/custom_outline_btn.dart';
 import 'package:hirelane/UI/profile/profile.dart';
 import 'package:hirelane/UI/recruiterPages/recruiterHome.dart';
+import 'package:hirelane/services/config.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
@@ -48,35 +49,44 @@ class _LoginPageState extends State<LoginPage>{
   }
 
   Future<bool> loginUser(String email, String password) async {
-    final response = await http.post(
+    try {
+      final response = await http.post(
       //Uri.parse("http://10.0.2.2:5002/api/login"), // replace with your IP or domain
-      Uri.parse("http://192.168.110.231:5002/api/login"), // replace with your IP or domain
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "email": email,
-        "password": password,
-      }),
-    );
+        Uri.parse("${Config.apiUrl.toString()}/api/login"), // replace with your IP or domain
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "email": email,
+          "password": password,
+        }),
+      );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final token = data['userToken'];
-      final userId = data['_id'];
-      // ✅ Save token for future use
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token', token);
-      getProfile(userId, token);
-      print(data['username']);
-      return true;
-    } else {
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final token = data['userToken'];
+        final userId = data['_id'];
+        // ✅ Save token for future use
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', token);
+        getProfile(userId, token);
+        print(data['username']);
+        return true;
+      } else {
+        Get.snackbar(
+          "Login Failed",
+          "${response.body}",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        print("Login failed: ${response.body}");
+        return false;
+      }
+    } catch (e) {
       Get.snackbar(
-        "Login Failed",
-        "${response.body}",
-        snackPosition: SnackPosition.BOTTOM,
+        "Login Failed", "$e", snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
-      );
-      print("Login failed: ${response.body}");
+        icon: Icon(Icons.error, color: Colors.white,));
       return false;
     }
   }
@@ -86,7 +96,7 @@ class _LoginPageState extends State<LoginPage>{
     //final token = prefs.getString('auth_token');
 
     final response = await http.get(
-      Uri.parse("http://192.168.110.231:5002/api/users/$userId"),
+      Uri.parse("${Config.apiUrl}/api/users/$userId"),
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer $token" // or "Authorization" depending on your backend
@@ -99,6 +109,8 @@ class _LoginPageState extends State<LoginPage>{
       await prefs.setString('firebase_id', userData['uid'] );
       await prefs.setString('username', userData['username'] );
       await prefs.setString('user_email', userData['email'] );
+      await prefs.setBool('isAgent', userData['isAgent']);
+      await prefs.setBool('isLoggedIn', true);
       String isAgent = userData['isAgent'].toString();
       print("User Data: $userData");
       if(isAgent == "true"){
@@ -218,13 +230,14 @@ class _LoginPageState extends State<LoginPage>{
                                 )
                               ],
                             ),
-                            const HeightSpacer(size: 30),
+                            const HeightSpacer(size: 30), 
                             CustomOutlineBtn(
                               text:"SignIn",
                               color: Colors.white,
                               height: 50,
                               color2: Colors.blueAccent,
                               onTap: (){
+                                print("button pressed");
                                 //Navigator.pushReplacement(context, MaterialPageRoute(builder:(context)=> HomePage()));
                                 loginUser(email.text, password.text);
                                 //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> MyProfile()));

@@ -306,7 +306,6 @@ class _RegistrationPageState extends State<RegistrationPage>{
                               },
                             ),
                             const HeightSpacer(size: 20),
-                            
                             //Image(image: AssetImage('assets/googleLogo.png'),height: 100,),
                             const HeightSpacer(size: 20),
                             

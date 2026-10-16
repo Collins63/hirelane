@@ -66,7 +66,7 @@ class _RecruiterJobsState extends State<RecruiterJobs> {
     });
     try {
       final response = await http.get(
-      Uri.parse("http://192.168.110.231:5002/api/jobs/agent/$agentId"),
+      Uri.parse("http://172.20.10.4:5002/api/jobs/agent/$agentId"),
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer $token" // or "Authorization" depending on your backend
@@ -89,7 +89,7 @@ class _RecruiterJobsState extends State<RecruiterJobs> {
   Future<void> createJob() async{
     try {
       final response = await http.post(
-        Uri.parse("http://192.168.110.231:5002/api/jobs"),
+        Uri.parse("http://172.20.10.4:5002/api/jobs"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "title": titleController.text,

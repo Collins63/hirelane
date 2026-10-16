@@ -1,17 +1,19 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:hirelane/CONSTANTS/app_bar.dart';
+import 'package:hirelane/CONSTANTS/app_constants.dart';
 import 'package:hirelane/CONSTANTS/app_style.dart';
 import 'package:hirelane/CONSTANTS/custom_outline_btn.dart';
 import 'package:hirelane/CONSTANTS/height_spacer.dart';
 import 'package:hirelane/CONSTANTS/reusable_text.dart';
 import 'package:hirelane/UI/home/home_page.dart';
+import 'package:hirelane/services/config.dart';
 import 'package:http/http.dart' as http;
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Job extends StatefulWidget {
@@ -25,11 +27,22 @@ class Job extends StatefulWidget {
 class _JobState extends State<Job> {
   Map<String, dynamic> jobfromDB = {};
   List<String> skillSet = [];
+  List<Map<String, dynamic>> appliedJobs =[];
+  String targetUserId = '';
+  String targetJobId ='';
+  bool hasApplied = false;
+  final formKey = GlobalKey<FormState>();
+  TextEditingController coverLetter = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    getJob();
+    getData();
+  }
+
+  void getData() async{
+    await getJob();
+    await getApplications();
   }
 
   Future<void> getJob() async {
@@ -38,7 +51,7 @@ class _JobState extends State<Job> {
     //final token = prefs.getString('auth_token');
 
     final response = await http.get(
-      Uri.parse("http://192.168.110.231:5002/api/jobs/$jobId"),
+      Uri.parse("${Config.apiUrl}/api/jobs/$jobId"),
       headers: {
         "Content-Type": "application/json",
       },
@@ -48,6 +61,7 @@ class _JobState extends State<Job> {
       final job = jsonDecode(response.body);
       print("Jobs fetched successfully: $job");
       setState(() {
+        targetJobId = job['_id'] ?? "0";
         jobfromDB = Map<String, dynamic>.from(job) ;
         skillSet = List<String>.from(job['requirements'] ?? []);
       });
@@ -63,12 +77,45 @@ class _JobState extends State<Job> {
     }
   }
 
+  Future<void> getApplications() async{
+    final prefs = await SharedPreferences.getInstance();
+    String userId = prefs.getString('user_id')!;
+    
+    final response = await http.get(
+      Uri.parse("${Config.apiUrl}/api/applications/user/$userId"),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    );
+
+    if(response.statusCode == 200){
+      final jobs = jsonDecode(response.body);
+      setState(() {
+        appliedJobs = List<Map<String, dynamic>>.from(jobs);
+        targetUserId = userId;
+      });
+
+      hasApplied = appliedJobs.any((app)=>
+        app["userId"] == targetUserId && app['job']['_id'] == targetJobId
+      );
+    }else{
+      Get.snackbar(
+        "Applied jobs fetch failed",
+        "${response.body}",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.amber,
+        colorText: Colors.black,
+        icon: Icon(Iconsax.warning_2)
+      );
+    }
+  }
+
   Future<void> addToBookmarks(String jobId) async{
     final prefs = await SharedPreferences.getInstance();
     String userId = prefs.getString('user_id')!;
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.110.231:5002/api/bookmarks'),
+        Uri.parse('${Config.apiUrl}/api/bookmarks'),
         headers: {
           "Content-Type": "application/json",
         },
@@ -102,27 +149,124 @@ class _JobState extends State<Job> {
 
   }
 
+  applyForJob(String jobId, String recruiterId){
+    return showModalBottomSheet(
+      backgroundColor: Colors.white,
+      isScrollControlled: true,
+      isDismissible: true,
+      context: context,
+      builder: (context){
+        return Container(
+          height: 600,
+          child: Padding(
+            padding:  EdgeInsets.only(
+              left: 16.0,
+              right: 16.0,
+              top: 16.0,
+              bottom: MediaQuery.of(context).viewInsets.bottom
+            ),
+            child: Form(
+              key: formKey,
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                  children: [
+                    Center(
+                      child: Container(
+                        height: 5,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: kDark,
+                          borderRadius: BorderRadius.circular(20), 
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10,),
+                    SizedBox(height: 5,),
+                    Image(image: AssetImage("assets/write.jpg"), height: 200,),
+                    SizedBox(height: 10,),
+                    TextFormField(
+                      maxLines: 10,
+                      controller: coverLetter,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+                        labelText: "Letter",
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            width: 1,
+                            color: Colors.grey,
+                          ),
+                          borderRadius: BorderRadius.circular(10.0)
+                        ),
+                      ),
+                    ),
+                    
+                    SizedBox(height: 10,),
+                    CustomOutlineBtn(
+                      text: 'Send application',
+                      color: Colors.white,
+                      color2: Colors.blueAccent,
+                      height: 40,
+                      onTap: ()async{
+                        final prefs = await SharedPreferences.getInstance();
+                        String userId = prefs.getString('user_id')!;
+                        print("recruiter id is $recruiterId");
+                        try {
+                          final response = await http.post(
+                            Uri.parse("${Config.apiUrl}/api/applications/"),
+                            headers: {"Content-Type": "application/json"},
+                            body: jsonEncode({
+                              "jobId": jobId ,
+                              "userId": userId,
+                              "agentId": recruiterId,
+                              "coverLetter": coverLetter.text,
+                            })
+                          );
+                          if(response.statusCode == 200){
+                            Navigator.pop(context);
+                            Get.snackbar("Success", "Job application has been sent ",
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.green,
+                              colorText: Colors.white
+                            );
+                            getApplications();
+                          }else{
+                            Get.snackbar("Error applying for job",
+                              "Please try again",
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                              icon: Icon(Iconsax.warning_2),
+                              snackPosition: SnackPosition.BOTTOM
+                            );
+                          }
+                        } catch (e) {
+                          Get.snackbar("Error applying for job",
+                            "$e",
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                            icon: Icon(Iconsax.warning_2),
+                            snackPosition: SnackPosition.BOTTOM
+                          );
+                        }
+                      },
+                    )
+                  ],
+                
+              ),
+            ),
+          ),
+        );
+      }
+    );
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.blueAccent,
-          leading: IconButton(
-            onPressed: (){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
-            },
-            icon: const Icon(Icons.chevron_left_rounded , color: Colors.white ,size: 30,),
-          ),
+          backgroundColor: Colors.white,
           centerTitle: true,
-          title: const Text("Job" , style: TextStyle(fontWeight: FontWeight.w500 , fontSize: 16 , color: Colors.white),),
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20),
-            ),
-          ),
+          title: ReusableText(text:"Job" , style: appStyle(14, Colors.grey.shade800, FontWeight.bold),),
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -170,17 +314,20 @@ class _JobState extends State<Job> {
                               children: [
                                 ReusableText(text: "Apply for this job", style:appStyle(16,Colors.white, FontWeight.w500)),
                                 const HeightSpacer(size: 20),
-                                Container(
-                                  width: 280,
-                                  child: ReusableText(text: "This could could be your next step in the persuit of greatness", style:appStyle(12,Colors.white, FontWeight.w500))),
+                                ReusableText(text: "Get Hired!!", style: appStyle(46, Colors.white, FontWeight.bold))
                               ],
                             ),
-                            Image(
-                              image: AssetImage('assets/worker.png')
-                            )
+                            // Image(
+                            //   image: AssetImage('assets/worker.png')
+                            // )
                           ],
                         ),
                       ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child:Image(image: AssetImage("assets/worker.png"), height: 100
+                      ) ,
                     )
                   ],
                 ),
@@ -249,14 +396,6 @@ class _JobState extends State<Job> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
                   color: Colors.white,
-                  // boxShadow: [
-                  //   BoxShadow(
-                  //     color: Colors.black.withOpacity(0.3),
-                  //     offset: Offset(0, 6),
-                  //     blurRadius: 6,
-                  //     spreadRadius: 4
-                  //   )
-                  //]
                 ),
               ),
               const HeightSpacer(size: 20),
@@ -303,13 +442,24 @@ class _JobState extends State<Job> {
         color: Colors.white,
         height: 60,
         child: Center(
-          child: CustomOutlineBtn(
+          child: hasApplied ? CustomOutlineBtn(
+            height: 40,
+            text: "View Progress",
+            color: Colors.white,
+            color2: Colors.blueAccent,
+            onTap: (){},
+          ) :
+          CustomOutlineBtn(
             height: 40,
             text: "Apply Now",
             color: Colors.white,
             color2: Colors.blueAccent,
-            onTap: (){},
-          ),
+            onTap: (){
+              String jobId = jobfromDB['_id'];
+              String recruiterId = jobfromDB['agentId'];
+              applyForJob(jobId, recruiterId);
+            },
+          )
         ),
       ),
     );

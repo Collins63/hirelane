@@ -6,10 +6,13 @@ import 'package:hirelane/CONSTANTS/custom_outline_btn.dart';
 import 'package:hirelane/CONSTANTS/height_spacer.dart';
 import 'package:hirelane/CONSTANTS/reusable_text.dart';
 import 'package:hirelane/UI/auth/login_page.dart';
+import 'package:hirelane/UI/chat/chatMain.dart';
 import 'package:hirelane/UI/home/home_page.dart';
 import 'package:hirelane/UI/recruiterPages/findTalent.dart';
 import 'package:hirelane/UI/recruiterPages/inTransit.dart';
+import 'package:hirelane/UI/recruiterPages/recruiterApplications.dart';
 import 'package:hirelane/UI/recruiterPages/recruiterJobs.dart';
+import 'package:hirelane/UI/recruiterPages/recruiterProfile.dart';
 import 'package:hirelane/constants/app_constants.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:lottie/lottie.dart';
@@ -90,7 +93,7 @@ class _RecruiterHomeState extends State<RecruiterHome> {
                                   height: 40,
                                   width: 100,
                                   onTap: (){
-                                    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => Findtalent()));
+                                    Navigator.push(context,MaterialPageRoute(builder: (context) => Findtalent()));
                                   },
                                 )
                               ],
@@ -295,12 +298,14 @@ class _RecruiterHomeState extends State<RecruiterHome> {
                 Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => RecruiterHome()));
               }, icon: Icon(CupertinoIcons.home)),
               IconButton(onPressed: (){
-                
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Recruiterapplications()));
               }, icon: Icon(CupertinoIcons.doc_plaintext)),
               SizedBox(width: 40,),
-              IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.captions_bubble)),
               IconButton(onPressed: (){
-                Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=> LoginPage()));
+                Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>Chatmain()));
+              }, icon: Icon(CupertinoIcons.captions_bubble)),
+              IconButton(onPressed: (){
+                Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=> Recruiterprofile()));
               }, icon: Icon(CupertinoIcons.person))
             ],
           )

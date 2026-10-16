@@ -2,16 +2,23 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hirelane/UI/auth/login_page.dart';
+import 'package:hirelane/UI/home/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:hirelane/CONSTANTS/app_constants.dart';
 import 'package:hirelane/UI/onboarding/onboarding_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'CONSTANTS/exports.dart';
 
+int isFirstTime = 0;
+bool isLoggedIn = false;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  isFirstTime = prefs.getInt('onBoard') ?? 0;
+  isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
   runApp(
       MultiProvider(
         providers:[
@@ -40,14 +47,14 @@ class MyApp extends StatelessWidget {
       builder: (context, child){
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
-          title: "Tourista AR",
+          title: "HireLane",
           theme: ThemeData(
             scaffoldBackgroundColor: Color(kLight.value),
             iconTheme: IconThemeData(color: Color(kDark.value)),
             primarySwatch: Colors.grey,
             useMaterial3: true,
           ),
-          home: const OnboardingScreen(),
+          home: isFirstTime == 0 ? OnboardingScreen() : isLoggedIn ? HomePage() : LoginPage(),
         );
       },
     );

@@ -9,27 +9,44 @@ final FirebaseStorage _storage = FirebaseStorage.instance;
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class Imageuploadfirebase {
-  Future<String> uploadImageToStorage(String childName , Uint8List file) async{
-    try {
-      Reference ref = _storage.ref().child(childName);
-      UploadTask uploadTask = ref.putData(file);
-      print('were here');
-      TaskSnapshot snapshot = await uploadTask;
-      String downloadUrl = await snapshot.ref.getDownloadURL();
-      return downloadUrl;
-    } catch (e, stack) {
-       print('Upload failed: $e');
-      print('Stack trace: $stack');
-      rethrow; // or return some fallback value or error string
-    }
+  // Future<String> uploadImageToStorage(String childName , Uint8List file) async{
+  //   try {
+  //     Reference ref = _storage.ref().child(childName);
+  //     UploadTask uploadTask = ref.putData(file);
+  //     print('were here');
+  //     TaskSnapshot snapshot = await uploadTask;
+  //     String downloadUrl = await snapshot.ref.getDownloadURL();
+  //     return downloadUrl;
+  //   } catch (e, stack) {
+  //      print('Upload failed: $e');
+  //     print('Stack trace: $stack');
+  //     rethrow; // or return some fallback value or error string
+  //   }
+  // }
+  Future<String> uploadImageToStorage(String childName, Uint8List file, String firebaseId) async {
+  try {
+    // Make unique filename
+    String fileName = "$childName/${firebaseId}_${DateTime.now().millisecondsSinceEpoch}.jpg";
+
+    Reference ref = _storage.ref().child(fileName);
+    UploadTask uploadTask = ref.putData(file);
+    TaskSnapshot snapshot = await uploadTask;
+
+    String downloadUrl = await snapshot.ref.getDownloadURL();
+    return downloadUrl;
+  } catch (e, stack) {
+    print('Upload failed: $e');
+    print('Stack trace: $stack');
+    rethrow;
   }
+}
 
   Future<String> saveData({required String firebaseId , required String email , required Uint8List file })async{
     String resp = "Some error occured";
     try {
       
       if(firebaseId.isNotEmpty || email.isNotEmpty || file.isNotEmpty){
-        String imageUrl = await uploadImageToStorage('profileImages', file);
+        String imageUrl = await uploadImageToStorage('profileImages', file, firebaseId);
         
         await _firestore.collection('userProfile').add({
           'firebaseId': firebaseId,

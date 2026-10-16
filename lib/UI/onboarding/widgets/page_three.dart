@@ -37,7 +37,9 @@ class PageThree extends StatelessWidget {
               color2: Colors.blueAccent,
               height: 50,
               width: 300,
-              onTap: (){
+              onTap: ()async{
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                prefs.setInt('onBoard', 1);
                 Navigator.pushReplacement(
                   context, MaterialPageRoute(
                     builder: (context) => const LoginPage()

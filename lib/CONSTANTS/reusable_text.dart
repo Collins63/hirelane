@@ -13,7 +13,6 @@ class ReusableText extends StatelessWidget {
       textAlign: TextAlign.left,
       overflow: TextOverflow.visible,
       style: style,
-      
     );
   }
 }
